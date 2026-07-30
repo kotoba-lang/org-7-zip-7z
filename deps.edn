@@ -2,11 +2,15 @@
  ;; org-tukaani-xz supplies LZMA1/LZMA2 (the coders .7z actually uses) and
  ;; org-ietf-deflate the CRC-32 that every 7z structure carries, plus the
  ;; Deflate coder.
- :deps {io.github.kotoba-lang/org-tukaani-xz {:git/sha "f5d0605128f5b4ae1a6a17460be3afce34fac9fa"}
-        io.github.kotoba-lang/org-ietf-deflate {:git/sha "430d754313e9082114ec00554e0b6770d9d318c5"}}
+ :deps {io.github.kotoba-lang/org-tukaani-xz {:git/sha "05c6e652c680edc8bca61a1e6ea867b86e019f26"}
+        io.github.kotoba-lang/org-ietf-deflate {:git/sha "430d754313e9082114ec00554e0b6770d9d318c5"}
+        ;; the BZip2 coder ([0x04 0x02 0x02]), which 7z uses for its own -mx=9
+        ;; text profiles. Refused by name until this codec existed.
+        io.github.kotoba-lang/org-sourceware-bzip2 {:git/sha "4c9f3b214e800f304b3de9c985b08af610704804"}}
  :aliases
  {:local {:override-deps {io.github.kotoba-lang/org-tukaani-xz {:local/root "../org-tukaani-xz"}
-                          io.github.kotoba-lang/org-ietf-deflate {:local/root "../org-ietf-deflate"}}}
+                          io.github.kotoba-lang/org-ietf-deflate {:local/root "../org-ietf-deflate"}
+                          io.github.kotoba-lang/org-sourceware-bzip2 {:local/root "../org-sourceware-bzip2"}}}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}

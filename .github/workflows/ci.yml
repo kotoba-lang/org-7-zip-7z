@@ -49,8 +49,22 @@ jobs:
         with:
           node-version: '22'
       - run: npm install -g nbb@1.4.210
-      - name: Fetch the pinned sibling checkouts
+      # nbb has no dependency resolver, so nbb.edn reads its dependencies from
+      # sibling checkouts. Pin each to the SHA deps.edn resolves rather than
+      # cloning whatever main happens to be — that is how a green CI run can
+      # disagree with the pin the consumer actually gets.
+      - name: Fetch the pinned dependencies as sibling checkouts
         run: |
-          git clone https://github.com/kotoba-lang/org-ietf-deflate.git ../org-ietf-deflate
-          git clone https://github.com/kotoba-lang/org-tukaani-xz.git ../org-tukaani-xz
+          set -eu
+          for repo in org-ietf-deflate org-tukaani-xz org-sourceware-bzip2; do
+            sha=$(grep "$repo " deps.edn | grep -o '[0-9a-f]\{40\}' | head -1)
+            test -n "$sha"
+            git clone --quiet "https://github.com/kotoba-lang/$repo.git" "../$repo"
+            git -C "../$repo" checkout --quiet "$sha"
+            echo "$repo @ $sha"
+          done
+          # org-tukaani-xz itself needs org-nist-sha2 on the nbb classpath
+          sha=$(grep 'org-nist-sha2 ' ../org-tukaani-xz/deps.edn | grep -o '[0-9a-f]\{40\}' | head -1)
+          git clone --quiet https://github.com/kotoba-lang/org-nist-sha2.git ../org-nist-sha2
+          git -C ../org-nist-sha2 checkout --quiet "$sha"
       - run: nbb run-tests.cljs

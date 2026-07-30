@@ -54,7 +54,8 @@ the reader reconciles all three; CRCs are verified by default.
 | LZMA2 (`21`) | implemented |
 | Delta (`03`) | implemented |
 | Deflate (`040108`) | implemented (via `org-ietf-deflate`) |
-| BZip2, PPMd, Deflate64, BCJ, BCJ2, AES-256, ARM64, RISC-V | **refused by name** (`:unsupported-coder` with `:coder`) |
+| BZip2 (`040202`) | implemented (via `org-sourceware-bzip2`) |
+| PPMd, Deflate64, BCJ, BCJ2, AES-256, ARM64, RISC-V | **refused by name** (`:unsupported-coder` with `:coder`) |
 
 Returning undecoded bytes as a member's content would be silent corruption, so an
 unimplemented coder is an error. AES-256 in particular is a refusal, not a
@@ -87,6 +88,6 @@ clojure -M:lint
 The JVM suite drives the real `7z` binary in both directions and covers every
 layout combination separately, because each is a different path through the
 reader: Copy/LZMA1/LZMA2, solid and non-solid, plain and compressed header, plus
-directories, empty files, Unicode names, a 1 MB solid archive, and bzip2/PPMd
-archives to assert the refusals. Then our own archive goes back through
+directories, empty files, Unicode names, a 1 MB solid archive, BZip2 folders in
+all three layouts, and PPMd/BCJ archives to assert the remaining refusals. Then our own archive goes back through
 `7z t` / `7z l` / `7z x`.

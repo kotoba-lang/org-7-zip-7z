@@ -118,10 +118,44 @@ open('tree/unicode-日本語.txt','w').write('日本語の中身')
                   "…and skippable for salvage"))))
         (finally (rm-rf dir))))))
 
+(deftest we-read-bzip2-folders
+  ;; BZip2 was refused by name until org-sourceware-bzip2 existed. 7-Zip picks it
+  ;; for some text profiles, and it is the one coder here whose stream is a
+  ;; complete file format in its own right.
+  (if-not (and (have-7z?) (have-python?))
+    (println "SKIP sevenz.oracle-test: 7z or python3 not available")
+    (doseq [[label extra] [["non-solid" ["-ms=off"]] ["solid" ["-ms=on"]]
+                           ["compressed header" ["-mhc=on"]]]]
+      (let [dir (temp-dir)]
+        (try
+          (testing label
+            (let [expected (make-tree! dir)]
+              (apply sh! dir (concat ["7z" "a" "-bd" "-y" "-m0=BZip2"] extra
+                                     ["out.7z" "tree"]))
+              (let [archive (read-ubytes (io/file dir "out.7z"))
+                    parsed (into {} (for [e (sevenz/parse archive)
+                                          :when (not (:dir? e))]
+                                      [(:name e) e]))]
+                (testing "every member decodes to what 7z was given"
+                  (doseq [[name content] expected
+                          :let [e (get parsed name)]]
+                    (is (some? e) (str name " missing from the archive"))
+                    (when e
+                      ;; `.getBytes` is signed; this API is unsigned 0-255
+                      (is (= (mapv #(bit-and (int %) 0xff)
+                                   (.getBytes ^String content "UTF-8"))
+                             (:bytes e))
+                          name))))
+                (testing "and the recorded CRCs verify (they are checked on parse)"
+                  ;; 7-Zip records no CRC for an empty member — there is nothing
+                  ;; to checksum — so only non-empty ones carry one
+                  (is (every? :crc32 (remove :empty? (vals parsed))))))))
+          (finally (rm-rf dir)))))))
+
 (deftest we-refuse-coders-we-do-not-implement
   (if-not (and (have-7z?) (have-python?))
     (println "SKIP sevenz.oracle-test: 7z or python3 not available")
-    (doseq [[coder expected] [["bzip2" :bzip2] ["ppmd" :ppmd]]]
+    (doseq [[coder expected] [["ppmd" :ppmd] ["bcj" :bcj-x86]]]
       (let [dir (temp-dir)]
         (try
           (testing coder

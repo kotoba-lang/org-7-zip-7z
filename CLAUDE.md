@@ -11,6 +11,10 @@ The .7z container in portable `.cljc`. Two dependencies: `org-tukaani-xz`
 - **Never return undecoded bytes as a member's content.** An unimplemented coder
   raises `:unsupported-coder` *with the coder's name*. This is the whole reason
   the coder table lists formats it cannot decode.
+- **BZip2 (`040202`) is implemented** via `org-sourceware-bzip2` (2026-07-30); it
+  was a refusal only because the codec did not exist in the workspace. When a new
+  codec lands, check this table for a refusal it turns into an implementation —
+  the archive format does not care which codecs you have.
 - **No decryption.** AES-256 archives are refused. Do not add a password option.
 - **CRCs are verified by default** (`:verify-crc false` for salvage). 7-Zip
   always records them, so a missing CRC is itself suspicious.

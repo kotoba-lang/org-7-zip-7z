@@ -22,7 +22,8 @@
    BCJ/BCJ2 branch conversion, AES-256, PPMd, BZip2, ARM64/RISC-V filters — is
    recognised and refused **by name**, because returning undecoded bytes as a
    member's content is the failure mode this repo exists to avoid."
-  (:require [deflate.core :as deflate]
+  (:require [bzip2.core :as bzip2]
+            [deflate.core :as deflate]
             [xz.lzma :as lzma]))
 
 (def signature [0x37 0x7a 0xbc 0xaf 0x27 0x1c])
@@ -55,7 +56,8 @@
 ;; unknown property by its declared size, so it needs no special case.
 
 (def coder-names
-  "Coder IDs as they appear in a folder. Only the first five are decoded."
+  "Coder IDs as they appear in a folder. Copy, LZMA1/2, Delta, Deflate and BZip2
+   are decoded; the rest are refused by name."
   {[0x00]           :copy
    [0x21]           :lzma2
    [0x03 0x01 0x01] :lzma1
@@ -392,6 +394,9 @@
     :delta (delta-decode input (inc (first props)))
 
     :deflate (deflate/inflate-raw input (select-keys opts [:max-output]))
+
+    ;; a bare bzip2 stream, BZh header and all — 7z reaches for this on text
+    :bzip2 (bzip2/decompress input (select-keys opts [:max-output]))
 
     (throw (ex-info (str "7z: unsupported coder: " (name coder))
                     {:reason :unsupported-coder :coder coder}))))
