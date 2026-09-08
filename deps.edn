@@ -2,7 +2,12 @@
  ;; org-tukaani-xz supplies LZMA1/LZMA2 (the coders .7z actually uses) and
  ;; org-ietf-deflate the CRC-32 that every 7z structure carries, plus the
  ;; Deflate coder.
- :deps {io.github.kotoba-lang/org-tukaani-xz {:git/sha "05c6e652c680edc8bca61a1e6ea867b86e019f26"}
+ :deps {
+        ;; kotoba.lang.text, not clojure.string. Pinned as an explicit floor:
+        ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
+        ;; this repo silently rides whatever a sibling happens to name.
+        io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
+       io.github.kotoba-lang/org-tukaani-xz {:git/sha "05c6e652c680edc8bca61a1e6ea867b86e019f26"}
         io.github.kotoba-lang/org-ietf-deflate {:git/sha "430d754313e9082114ec00554e0b6770d9d318c5"}
         ;; the BZip2 coder ([0x04 0x02 0x02]), which 7z uses for its own -mx=9
         ;; text profiles. Refused by name until this codec existed.
