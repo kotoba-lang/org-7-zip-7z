@@ -7,7 +7,7 @@ The .7z container in portable `.cljc`. Two dependencies: `org-tukaani-xz`
 ## Invariants
 
 - **No host codec, no shell.** The `7z` binary appears in
-  `test/sevenz/oracle_test.clj` only, as an oracle.
+  `test/sevenz/oracle_test.cljk` only, as an oracle.
 - **Never return undecoded bytes as a member's content.** An unimplemented coder
   raises `:unsupported-coder` *with the coder's name*. This is the whole reason
   the coder table lists formats it cannot decode.
@@ -18,7 +18,7 @@ The .7z container in portable `.cljc`. Two dependencies: `org-tukaani-xz`
 - **No decryption.** AES-256 archives are refused. Do not add a password option.
 - **CRCs are verified by default** (`:verify-crc false` for salvage). 7-Zip
   always records them, so a missing CRC is itself suspicious.
-- **Both runtimes are gated** (`clojure -M:test`, `nbb run-tests.cljs`).
+- **Both runtimes are gated** (`clojure -M:test`, `nbb run-tests.cljk`).
 
 ## Traps
 

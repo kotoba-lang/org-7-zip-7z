@@ -81,7 +81,7 @@ anyway. Output is reproducible: no timestamps, no attributes, no clock.
 ```sh
 clojure -M:test          # JVM: portable suite + conformance against the 7z CLI
 clojure -M:local:test    # …against sibling org-tukaani-xz / org-ietf-deflate checkouts
-nbb run-tests.cljs       # ClojureScript: build + read, no host codec
+nbb run-tests.cljk       # ClojureScript: build + read, no host codec
 clojure -M:lint
 ```
 
