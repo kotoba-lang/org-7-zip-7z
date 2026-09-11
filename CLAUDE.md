@@ -18,7 +18,7 @@ The .7z container in portable `.cljc`. Two dependencies: `org-tukaani-xz`
 - **No decryption.** AES-256 archives are refused. Do not add a password option.
 - **CRCs are verified by default** (`:verify-crc false` for salvage). 7-Zip
   always records them, so a missing CRC is itself suspicious.
-- **Both runtimes are gated** (`clojure -M:test`, `nbb run-tests.cljk`).
+- **Both runtimes are gated** (`kbb -M:test`, `kbb --backend sci run-tests.cljk`).
 
 ## Traps
 

@@ -79,10 +79,10 @@ anyway. Output is reproducible: no timestamps, no attributes, no clock.
 ## Test
 
 ```sh
-clojure -M:test          # JVM: portable suite + conformance against the 7z CLI
-clojure -M:local:test    # …against sibling org-tukaani-xz / org-ietf-deflate checkouts
-nbb run-tests.cljk       # ClojureScript: build + read, no host codec
-clojure -M:lint
+kbb -M:test          # JVM: portable suite + conformance against the 7z CLI
+kbb -M:local:test    # …against sibling org-tukaani-xz / org-ietf-deflate checkouts
+kbb --backend sci run-tests.cljk       # ClojureScript: build + read, no host codec
+kbb -M:lint
 ```
 
 The JVM suite drives the real `7z` binary in both directions and covers every
