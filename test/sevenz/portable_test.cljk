@@ -1,6 +1,6 @@
 (ns sevenz.portable-test
   "Runtime-agnostic suite: builds and reads .7z with no shell and no host codec.
-   Runs under `clojure -M:test` and `nbb run-tests.cljk`.
+   Runs under `kbb -M:test` and `kbb --backend sci run-tests.cljk`.
 
    Conformance against real 7-Zip archives — LZMA1/LZMA2/Copy, solid and
    non-solid, plain and compressed headers — lives in `sevenz.oracle-test`. A
