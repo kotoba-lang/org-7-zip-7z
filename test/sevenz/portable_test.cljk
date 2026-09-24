@@ -7,7 +7,7 @@
    round-trip through our own Copy-coder writer exercises the header machinery
    but not the coders, which is where the difficulty is."
   (:require [sevenz.core :as sevenz]
-            #?(:clj  [clojure.test :refer [deftest is testing]]
+            #?(:clj  [kotoba.test :refer [deftest is testing]]
                :cljs [cljs.test :refer [deftest is testing]])))
 
 (defn- char-code [c] #?(:clj (int c) :cljs (.charCodeAt c 0)))
