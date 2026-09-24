@@ -8,13 +8,12 @@
    the reader, so every one gets a fixture from 7-Zip itself.
 
    Skipped loudly when `7z` or python3 is missing rather than passing silently."
-  (:require [clojure.java.io :as io]
+  (:require [kotoba.bytes :as kbytes] [kotoba.io :as kio] [clojure.java.io :as io]
             [clojure.java.shell :as shell]
             [kotoba.lang.text :as str]
             [kotoba.test :refer [deftest is testing]]
             [sevenz.core :as sevenz])
-  (:import [java.io File]
-           [java.nio.file Files]))
+  (:import [java.io File]))
 
 (defn- have-7z? []
   (try (let [{:keys [exit out]} (shell/sh "7z")]
@@ -25,11 +24,11 @@
   (try (zero? (:exit (shell/sh "python3" "--version"))) (catch Exception _ false)))
 
 (defn- temp-dir []
-  (.toFile (Files/createTempDirectory "org-7-zip-" (make-array java.nio.file.attribute.FileAttribute 0))))
+  (kio/temp-dir "org-7-zip-"))
 
 (defn- rm-rf [^File f] (doseq [c (reverse (file-seq f))] (.delete ^File c)))
 
-(defn- read-ubytes [^File f] (mapv #(bit-and (int %) 0xff) (Files/readAllBytes (.toPath f))))
+(defn- read-ubytes [^File f] (mapv #(bit-and (int %) 0xff) (kio/read-all-bytes f)))
 (defn- write-bytes [^File f bs]
   (with-open [o (io/output-stream f)] (.write o (byte-array (map unchecked-byte bs)))))
 
@@ -61,7 +60,7 @@ open('tree/unicode-日本語.txt','w').write('日本語の中身')
 
 (defn- entry-text [parsed name]
   (let [e (sevenz/entry parsed name)]
-    (String. (byte-array (map unchecked-byte (:bytes e))) "UTF-8")))
+    (kbytes/utf8-string (byte-array (map unchecked-byte (:bytes e))))))
 
 ;; ---------------------------------------------------------------------------
 ;; 7-Zip → us
@@ -143,7 +142,7 @@ open('tree/unicode-日本語.txt','w').write('日本語の中身')
                     (when e
                       ;; `.getBytes` is signed; this API is unsigned 0-255
                       (is (= (mapv #(bit-and (int %) 0xff)
-                                   (.getBytes ^String content "UTF-8"))
+                                   (kbytes/utf8-bytes ^String content))
                              (:bytes e))
                           name))))
                 (testing "and the recorded CRCs verify (they are checked on parse)"
@@ -205,7 +204,7 @@ open('big2.log','w').write(''.join('another shape, row %d\\n' % i for i in range
                              (mapv (fn [[n c]]
                                      {:name n
                                       :bytes (mapv #(bit-and (int %) 0xff)
-                                                   (.getBytes ^String c "UTF-8"))})
+                                                   (kbytes/utf8-bytes ^String c))})
                                    members)))]
           (write-bytes (io/file dir "ours.7z") archive)
           (testing "`7z t` verifies it"
