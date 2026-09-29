@@ -1,4 +1,4 @@
-# CLAUDE.md — org-7-zip-7z
+# AGENTS.md — org-7-zip-7z
 
 The .7z container in portable `.cljc`. Two dependencies: `org-tukaani-xz`
 (LZMA1/LZMA2) and `org-ietf-deflate` (CRC-32, Deflate coder). Namespaces are
